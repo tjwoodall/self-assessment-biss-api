@@ -52,10 +52,12 @@ get:
           schema:
             $ref: './schemas/retrieveBiss/def1/response.json'
           examples:
-            example-1:
-              description: Example response given any tax year
+            Response for TY 2024-25 and before:
               value:
-                $ref: './examples/retrieveBiss/def1/response.json'
+                $ref: './examples/retrieveBiss/def1/responseTY2425AndBefore.json'
+            Response for TY 2025-26 onwards:
+              value:
+                $ref: './examples/retrieveBiss/def1/responseTY2526Onwards.json'
     "400":
       description: Bad request
       headers:

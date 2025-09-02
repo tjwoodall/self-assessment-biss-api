@@ -52,6 +52,11 @@
           "description": "The taxable net profit of the income source. The value must be between 0 and 99999999999.99 up to 2 decimal places.",
           "type": "number",
           "example": "0.00"
+        },
+        "adjusted": {
+          "description": "Profit including disallowable expenses and deducting non‑taxable income, before claiming capital allowances or making any further tax adjustments. The value must be between 0 and 99999999999.99 up to 2 decimal places. This field will only be returned for tax year 2025-26 and onwards.",
+          "type": "number",
+          "example": "30.00"
         }
       },
       "required": [
@@ -78,6 +83,11 @@
         "net",
         "taxable"
       ]
+    },
+    "outstandingBusinessIncome": {
+      "description": "Any other business income not included in other fields. The value must be between 0 and 99999999999.99 up to 2 decimal places. This field will only be returned for tax year 2025-26 and onwards.",
+      "type": "number",
+      "example": "30.00"
     }
   },
   "required": [
