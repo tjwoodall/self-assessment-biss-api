@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Retrieve a Business Income Source Summary Response",
   "description": "Retrieve a Business Income Source Summary Response",
   "type": "object",
