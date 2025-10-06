@@ -47,8 +47,7 @@ get:
           examples:
             example-1:
               description: Example response given any tax year
-              value:
-                $ref: './examples/retrieveBiss/def1/response.json'
+              externalValue: './examples/retrieveBiss/def1/response.json'
     "400":
       description: Bad request
       headers:
