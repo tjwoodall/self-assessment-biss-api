@@ -221,12 +221,12 @@ paths:
                         example: 0.00
                       adjusted:
                         type: number
-                        description: "[Test only] Profit including disallowable expenses\
-                          \ and deducting non‑taxable income, before claiming capital\
-                          \ allowances or making any further tax adjustments. The\
-                          \ value must be between 0 and 99999999999.99 up to 2 decimal\
-                          \ places. This field will only be returned for tax year\
-                          \ 2025-26 and onwards."
+                        description: "Profit including disallowable expenses and deducting\
+                          \ non‑taxable income, before claiming capital allowances\
+                          \ or making any further tax adjustments. The value must\
+                          \ be between 0 and 99999999999.99 up to 2 decimal places.\
+                          \ This field will only be returned for tax year 2025-26\
+                          \ and onwards."
                         example: 30.00
                     description: Object of profit values.
                   loss:
@@ -249,10 +249,10 @@ paths:
                     description: Object of loss values.
                   outstandingBusinessIncome:
                     type: number
-                    description: "[Test only] Any other business income not included\
-                      \ in other fields. The value must be between 0 and 99999999999.99\
-                      \ up to 2 decimal places. This field will only be returned for\
-                      \ tax year 2025-26 and onwards."
+                    description: Any other business income not included in other fields.
+                      The value must be between 0 and 99999999999.99 up to 2 decimal
+                      places. This field will only be returned for tax year 2025-26
+                      and onwards.
                     example: 30.00
                 description: Retrieve a Business Income Source Summary Response
               examples:
@@ -467,11 +467,11 @@ components:
               example: 0.00
             adjusted:
               type: number
-              description: "[Test only] Profit including disallowable expenses and\
-                \ deducting non‑taxable income, before claiming capital allowances\
-                \ or making any further tax adjustments. The value must be between\
-                \ 0 and 99999999999.99 up to 2 decimal places. This field will only\
-                \ be returned for tax year 2025-26 and onwards."
+              description: "Profit including disallowable expenses and deducting non‑\
+                taxable income, before claiming capital allowances or making any further\
+                \ tax adjustments. The value must be between 0 and 99999999999.99\
+                \ up to 2 decimal places. This field will only be returned for tax\
+                \ year 2025-26 and onwards."
               example: 30.00
           description: Object of profit values.
         loss:
@@ -493,9 +493,9 @@ components:
           description: Object of loss values.
         outstandingBusinessIncome:
           type: number
-          description: "[Test only] Any other business income not included in other\
-            \ fields. The value must be between 0 and 99999999999.99 up to 2 decimal\
-            \ places. This field will only be returned for tax year 2025-26 and onwards."
+          description: Any other business income not included in other fields. The
+            value must be between 0 and 99999999999.99 up to 2 decimal places. This
+            field will only be returned for tax year 2025-26 and onwards.
           example: 30.00
       description: Retrieve a Business Income Source Summary Response
     error-response:
