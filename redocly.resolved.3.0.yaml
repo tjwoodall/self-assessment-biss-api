@@ -1,0 +1,425 @@
+openapi: 3.0.3
+info:
+  version: '3.0'
+  title: Business Income Source Summary (MTD)
+  description: |
+    # Send fraud prevention data
+    HMRC monitors transactions to help protect your customers' confidential data from criminals and fraudsters. 
+
+    <div class="govuk-warning-text warning-icon-fix">
+      <span class="govuk-warning-text__icon warning-icon-ui-fix" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        You are required by law to submit header data for this API. This includes all associated APIs and endpoints.
+      </strong>
+    </div>
+
+    [Check the data you need to send](/guides/fraud-prevention/). You can also use the [Test API](/api-documentation/docs/api/service/txm-fph-validator-api/1.0) during initial development and as part of your quality assurance checks.
+
+    # Changelog
+    You can find the changelog in the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/#readme) GitHub wiki.
+
+
+    # Support
+
+    * Direct reports of bugs or errors in Production or Sandbox code, or queries about HMRC business functionality (such as how a specific field is used by HMRC or why it is needed) to the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).
+    * Send queries or feedback related to the design of the APIs (including recommended changes) using the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/issues) GitHub page.
+    * <a href="/contact/report-technical-problem?newTab=true&service=api-documentation-frontend" target="_blank">Is this page not working properly? (opens in new tab)</a>
+servers:
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: Production
+paths:
+  /individuals/self-assessment/income-summary/{nino}/{typeOfBusiness}/{taxYear}/{businessId}:
+    get:
+      summary: Retrieve a Business Income Source Summary (BISS)
+      description: |
+        This endpoint enables you to retrieve a running (year-to-date) summary of the income and expenditure for a 
+        specified self-employment or property business during a tax year. 
+        A National Insurance number, business ID, tax year and type of business are required.
+
+        <strong>
+          Note: From tax year 2025-26 onwards the following business types are no longer valid:
+            <ul>
+              <li>foreign-property-fhl-eea</li>
+              <li>uk-property-fhl</li>
+            </ul>
+        </strong>
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                      |
+        |----------------------------------|---------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response with total, profit and loss values.|
+        | NOT_FOUND                        | Simulates the scenario where no data is found.                |
+        | NO_INCOME_SUBMISSIONS_EXIST      | Simulates the scenario where no income submissions exist.     |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema:
+            type: string
+            example: TC663795B
+          required: true
+        - name: businessId
+          in: path
+          description: |
+            An identifier for the business, unique to the customer.<p>Must conform to the regular expression `^X[A-Z0-9]{1}IS[0-9]{11}$`
+          schema:
+            type: string
+            pattern: ^X[A-Z0-9]{1}IS[0-9]{11}$
+            example: XAIS12345678910
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year to which the data applies. For example: 2022-23. The start year and end year must not span two tax years.
+            The minimum tax year is 2022-23. No gaps are allowed, for example, 2022-24 is not valid. (The minimum tax year in Sandbox is 2021-22.)
+          schema:
+            type: string
+            example: 2022-23
+          required: true
+        - name: typeOfBusiness
+          in: path
+          description: |
+            The type of business the summary calculation is for.
+
+            Limited to the following possible values for tax years before 2025-26:
+
+            - foreign-property-fhl-eea
+            - foreign-property
+            - uk-property
+            - uk-property-fhl
+            - self-employment
+
+            Limited to the following possible values for tax year 2025-26 onwards:
+
+            - foreign-property
+            - uk-property
+            - self-employment
+          schema:
+            type: string
+            enum:
+              - foreign-property-fhl-eea
+              - foreign-property
+              - uk-property
+              - uk-property-fhl
+              - self-employment
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema:
+            type: string
+            enum:
+              - application/vnd.hmrc.3.0+json
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *read:self-assessment* scope.
+          schema:
+            type: string
+            example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema:
+            type: string
+            example: '-'
+          required: false
+      security:
+        - User-Restricted:
+            - read:self-assessment
+      responses:
+        '200':
+          description: Success
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: &ref_0
+                type: string
+                example: c75f40a6-a3df-4429-a697-471eeec46435
+              required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema:
+                type: string
+                example: Sun, 01 Jan 2023 23:59:59 GMT
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema:
+                type: string
+                example: Sun, 02 Jul 2023 23:59:59 GMT
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema:
+                type: string
+                example: https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/self-assessment-biss-api
+              required: false
+          content:
+            application/json:
+              schema:
+                $schema: http://json-schema.org/draft-04/schema#
+                title: Retrieve a Business Income Source Summary Response
+                description: Retrieve a Business Income Source Summary Response
+                type: object
+                properties:
+                  total:
+                    type: object
+                    description: Object of total values.
+                    properties:
+                      income:
+                        description: The total income for the income source. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '100.00'
+                      expenses:
+                        description: The total expenses for the income source. The value must be between -99999999999.99 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '50.00'
+                      additions:
+                        description: The total additions to net profit (or deduction to net loss). The value must be between -99999999999.99 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '5.00'
+                      deductions:
+                        description: The total deductions to net loss (or addition to net profit). The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '60.00'
+                      accountingAdjustments:
+                        description: Adjustment for change of accounting practice, for example, cash basis to accrual accounting. The value must be between -99999999999.99 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '-30.00'
+                    required:
+                      - income
+                      - expenses
+                  profit:
+                    type: object
+                    description: Object of profit values.
+                    properties:
+                      net:
+                        description: The net profit of income source. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '20.00'
+                      taxable:
+                        description: The taxable net profit of the income source. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '0.00'
+                      adjusted:
+                        description: Profit including disallowable expenses and deducting non‑taxable income, before claiming capital allowances or making any further tax adjustments. The value must be between 0 and 99999999999.99 up to 2 decimal places. This field will only be returned for tax year 2025-26 and onwards.
+                        type: number
+                        example: '30.00'
+                    required:
+                      - net
+                      - taxable
+                  loss:
+                    type: object
+                    description: Object of loss values.
+                    properties:
+                      net:
+                        description: The net loss of income source. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '0.00'
+                      taxable:
+                        description: The taxable net loss of the income source. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                        type: number
+                        example: '35.00'
+                    required:
+                      - net
+                      - taxable
+                  outstandingBusinessIncome:
+                    description: Any other business income not included in other fields. The value must be between 0 and 99999999999.99 up to 2 decimal places. This field will only be returned for tax year 2025-26 and onwards.
+                    type: number
+                    example: '30.00'
+                required:
+                  - total
+                  - profit
+                  - loss
+              examples:
+                Response for TY 2024-25 and before:
+                  value:
+                    total:
+                      income: 100.35
+                      expenses: 50
+                      additions: 575.7
+                      deductions: 60
+                      accountingAdjustments: -30
+                    profit:
+                      net: 20.2
+                      taxable: 35.55
+                    loss:
+                      net: 0
+                      taxable: 35.1
+                Response for TY 2025-26 onwards:
+                  value:
+                    total:
+                      income: 100.35
+                      expenses: 50.01
+                      additions: 575.71
+                      deductions: 60.01
+                      accountingAdjustments: -30.01
+                    profit:
+                      net: 20.2
+                      taxable: 35.55
+                      adjusted: 30.01
+                    loss:
+                      net: 0.01
+                      taxable: 35.1
+                    outstandingBusinessIncome: 35.01
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: &ref_1
+                  code:
+                    description: The error code
+                    type: string
+                  message:
+                    description: The error message
+                    type: string
+                required: &ref_2
+                  - code
+              examples:
+                FORMAT_NINO:
+                  description: |
+                    The format of the supplied NINO field is not valid.
+                  value:
+                    code: FORMAT_NINO
+                    message: The provided NINO is invalid
+                FORMAT_TAX_YEAR:
+                  description: |
+                    The format of the supplied taxYear value is not valid.
+                  value:
+                    code: FORMAT_TAX_YEAR
+                    message: The provided tax year is invalid
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: |
+                    Tax year range invalid. A tax year range of one year is required.
+                  value:
+                    code: RULE_TAX_YEAR_RANGE_INVALID
+                    message: Tax year range invalid. A tax year range of one year is required
+                FORMAT_TYPE_OF_BUSINESS:
+                  description: |
+                    The format of the supplied type of business is not valid.
+                  value:
+                    code: FORMAT_TYPE_OF_BUSINESS
+                    message: The provided typeOfBusiness is invalid
+                FORMAT_BUSINESS_ID:
+                  description: |
+                    The format of the supplied Business ID field is not valid.
+                  value:
+                    code: FORMAT_BUSINESS_ID
+                    message: The provided businessId is invalid
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: |
+                    The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value:
+                    code: RULE_TAX_YEAR_NOT_SUPPORTED
+                    message: The tax year specified does not lie within the supported range
+                RULE_NO_INCOME_SUBMISSIONS_EXIST:
+                  description: |
+                    No income submissions exist for the supplied income source.
+                  value:
+                    code: RULE_NO_INCOME_SUBMISSIONS_EXIST
+                    message: No income submissions exist
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available Sandbox data. Check that the supplied Gov-Test-Scenario is correct for this endpoint version. This error will only be returned in the Sandbox environment.
+                  value:
+                    code: RULE_INCORRECT_GOV_TEST_SCENARIO
+                    message: The supplied Gov-Test-Scenario is not valid
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.
+                  value:
+                    code: CLIENT_OR_AGENT_NOT_AUTHORISED
+                    message: The client and/or agent is not authorised
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: |
+                    The supplied income source could not be found.
+                  value:
+                    code: MATCHING_RESOURCE_NOT_FOUND
+                    message: Matching resource not found
+components:
+  securitySchemes:
+    User-Restricted:
+      type: oauth2
+      description: HMRC supports OAuth 2.0 for authenticating [User-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) API requests
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            write:self-assessment: Grant write access
+            read:self-assessment: Grant read access
