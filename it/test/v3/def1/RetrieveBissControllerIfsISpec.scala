@@ -16,7 +16,6 @@
 
 package v3.def1
 
-import api.models.domain.TaxYear
 import api.models.errors.*
 import api.services.*
 import play.api.http.HeaderNames.*
@@ -30,13 +29,10 @@ import v3.fixtures.RetrieveBissFixture
 
 class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBissFixture {
 
-  override def servicesConfig: Map[String, Any] =
-    Map("feature-switch.ifs_hip_migration_1871.enabled" -> false, "feature-switch.ifs_hip_migration_1879.enabled" -> false) ++ super.servicesConfig
-
   "Calling the retrieve BISS endpoint" should {
     "return a valid response with status OK" when {
       "valid request is made" in new NonTysTest {
-        DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUrl, queryParams, OK, downstreamResponseJsonFull)
+        DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUrl, OK, downstreamResponseJsonFull)
 
         val response: WSResponse = await(request.get())
 
@@ -66,7 +62,7 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
           override val typeOfBusiness: String   = requestTypeOfBusiness
           override val incomeSourceType: String = requestIncomeSourceType
 
-          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUrl, queryParams, OK, downstreamResponseJsonMin)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUrl, OK, downstreamResponseJsonFull)
 
           val response: WSResponse = await(request.get())
 
@@ -278,14 +274,9 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
   private class TysTest(mtdTaxYear: String, downstreamTysTaxYear: String, downstreamIncomeSourceType: String) extends Test {
     def incomeSourceType: String                     = downstreamIncomeSourceType
     def taxYear: String                              = mtdTaxYear
-    private def taxYearMtd(taxYear: String): TaxYear = TaxYear.fromMtd(taxYear)
     def downstreamTaxYear: String                    = downstreamTysTaxYear
 
-    def downstreamUrl: String = if (taxYearMtd(taxYear).year >= 2026) {
-      s"/income-tax/$downstreamTaxYear/income-sources/$nino/$businessId/$incomeSourceType/biss"
-    } else {
-      s"/income-tax/income-sources/$downstreamTaxYear/$nino/$businessId/$incomeSourceType/biss"
-    }
+    def downstreamUrl: String = s"/itsa/income-tax/v1/$downstreamTaxYear/income-sources/$nino/$businessId/$incomeSourceType/biss"
 
   }
 

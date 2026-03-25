@@ -28,7 +28,7 @@ enum TypeOfBusiness(val preThresholdType: IncomeSourceType, val postThresholdTyp
   case `self-employment`          extends TypeOfBusiness(IncomeSourceType.`self-employment`, Some(IncomeSourceType.`01`))
 
   def toIncomeSourceType(taxYear: Int): IncomeSourceType =
-    if (taxYear >= TypeOfBusiness.fhlPropertyMinimumTaxYear.year) {
+    if (taxYear >= TypeOfBusiness.postThresholdTaxYear.year) {
       postThresholdType.getOrElse(
         throw new IllegalArgumentException(
           s"Unsupported income source type: $preThresholdType for tax year: $taxYear"
@@ -41,6 +41,6 @@ enum TypeOfBusiness(val preThresholdType: IncomeSourceType, val postThresholdTyp
 }
 
 object TypeOfBusiness {
-  val fhlPropertyMinimumTaxYear: TaxYear              = TaxYear.fromMtd("2025-26")
+  val postThresholdTaxYear: TaxYear                   = TaxYear.fromMtd("2025-26")
   val parser: PartialFunction[String, TypeOfBusiness] = Enums.parser(values)
 }

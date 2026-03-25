@@ -20,11 +20,12 @@ import api.controllers.validators.Validator
 import api.controllers.validators.resolvers.{ResolveBusinessId, ResolveNino, ResolveTaxYear}
 import v3.retrieveBiss.controllers.validators.resolvers.ResolveTypeOfBusiness
 import api.models.domain.TaxYear
-import v3.retrieveBiss.model.domain.TypeOfBusiness._
+import v3.retrieveBiss.model.domain.TypeOfBusiness.*
 import api.models.errors.{MtdError, RuleTaxYearNotSupportedError, TypeOfBusinessFormatError}
 import cats.data.Validated
-import cats.data.Validated._
-import cats.implicits._
+import cats.data.Validated.*
+import cats.implicits.*
+import v3.retrieveBiss.model.domain.TypeOfBusiness
 import v3.retrieveBiss.model.request.{Def1_RetrieveBissRequestData, RetrieveBissRequestData}
 
 import javax.inject.Singleton
@@ -45,7 +46,7 @@ class Def1_RetrieveBissValidator(nino: String, typeOfBusiness: String, taxYear: 
 
   private def validateWithTypeOfBusinessAndTaxYear(parsed: RetrieveBissRequestData): Validated[Seq[MtdError], RetrieveBissRequestData] = {
     (parsed.typeOfBusiness, parsed.taxYear.year) match {
-      case (`uk-property-fhl` | `foreign-property-fhl-eea`, year) if year >= fhlPropertyMinimumTaxYear.year =>
+      case (`uk-property-fhl` | `foreign-property-fhl-eea`, year) if year >= TypeOfBusiness.postThresholdTaxYear.year =>
         Invalid(List(TypeOfBusinessFormatError))
 
       case (`foreign-property-fhl-eea` | `foreign-property`, year) if year < foreignPropertyMinimumTaxYear.year =>
