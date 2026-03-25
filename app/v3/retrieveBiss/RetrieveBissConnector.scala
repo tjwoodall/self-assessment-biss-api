@@ -17,42 +17,40 @@
 package v3.retrieveBiss
 
 import api.connectors.httpparsers.StandardDownstreamHttpParser.*
-import api.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import api.models.downstream.IncomeSourceType
 import config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 import v3.retrieveBiss.downstreamUriBuilder.RetrieveBissDownstreamUriBuilder
-import v3.retrieveBiss.model.request.{Def1_RetrieveBissRequestData, RetrieveBissRequestData}
+import v3.retrieveBiss.model.request.RetrieveBissRequestData
 import v3.retrieveBiss.model.response.{Def1_RetrieveBissResponse, RetrieveBissResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveBissConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig)(implicit ec: ExecutionContext)
+class RetrieveBissConnector @Inject() (
+    val http: HttpClientV2,
+    val appConfig: AppConfig
+)(implicit ec: ExecutionContext)
     extends BaseDownstreamConnector {
 
   def retrieveBiss(
-      request: RetrieveBissRequestData)(implicit hc: HeaderCarrier, correlationId: String): Future[DownstreamOutcome[RetrieveBissResponse]] = {
+      request: RetrieveBissRequestData
+  )(implicit hc: HeaderCarrier, correlationId: String): Future[DownstreamOutcome[RetrieveBissResponse]] = {
 
-    import request.*
-    val incomeSourceType: IncomeSourceType = typeOfBusiness.toIncomeSourceType(taxYear.year)
+    val incomeSourceType: IncomeSourceType =
+      request.typeOfBusiness.toIncomeSourceType(request.taxYear.year)
 
-    request match {
-      case def1: Def1_RetrieveBissRequestData =>
-        import def1.*
+    val uriBuilder =
+      RetrieveBissDownstreamUriBuilder.downstreamUriFor(request.taxYear)
 
-        val uriBuilder: RetrieveBissDownstreamUriBuilder[Def1_RetrieveBissResponse] =
-          RetrieveBissDownstreamUriBuilder.downstreamUriFor(taxYear)
+    val (downstreamUri, _) =
+      uriBuilder.buildUri(request.nino, request.businessId, incomeSourceType, request.taxYear)
 
-        val (downstreamUri, queryParams): (DownstreamUri[Def1_RetrieveBissResponse], Seq[(String, String)]) =
-          uriBuilder.buildUri(nino, businessId, incomeSourceType, taxYear)
-
-        val response: Future[DownstreamOutcome[Def1_RetrieveBissResponse]] = get(downstreamUri, queryParams)
-
-        response
-    }
+    get[Def1_RetrieveBissResponse](downstreamUri)
+      .map(_.asInstanceOf[DownstreamOutcome[RetrieveBissResponse]])
   }
 
 }
