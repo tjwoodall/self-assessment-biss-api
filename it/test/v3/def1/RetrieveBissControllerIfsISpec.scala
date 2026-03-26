@@ -272,9 +272,9 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
   }
 
   private class TysTest(mtdTaxYear: String, downstreamTysTaxYear: String, downstreamIncomeSourceType: String) extends Test {
-    def incomeSourceType: String                     = downstreamIncomeSourceType
-    def taxYear: String                              = mtdTaxYear
-    def downstreamTaxYear: String                    = downstreamTysTaxYear
+    def incomeSourceType: String  = downstreamIncomeSourceType
+    def taxYear: String           = mtdTaxYear
+    def downstreamTaxYear: String = downstreamTysTaxYear
 
     def downstreamUrl: String = s"/itsa/income-tax/v1/$downstreamTaxYear/income-sources/$nino/$businessId/$incomeSourceType/biss"
 

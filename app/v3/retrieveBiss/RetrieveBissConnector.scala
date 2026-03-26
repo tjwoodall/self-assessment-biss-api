@@ -46,10 +46,10 @@ class RetrieveBissConnector @Inject() (
     val uriBuilder =
       RetrieveBissDownstreamUriBuilder.downstreamUriFor(request.taxYear)
 
-    val (downstreamUri, _) =
+    val (downstreamUri, queryParams) =
       uriBuilder.buildUri(request.nino, request.businessId, incomeSourceType, request.taxYear)
 
-    get[Def1_RetrieveBissResponse](downstreamUri)
+    get[Def1_RetrieveBissResponse](downstreamUri, queryParams)
       .map(_.asInstanceOf[DownstreamOutcome[RetrieveBissResponse]])
   }
 

@@ -141,12 +141,6 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
       "Gov-Test-Scenario" -> "DEFAULT"
     )
 
-    MockedAppConfig.hipBaseUrl returns this.baseUrl
-    MockedAppConfig.hipEnv returns "hip-environment"
-    MockedAppConfig.hipClientId returns clientId
-    MockedAppConfig.hipClientSecret returns clientSecret
-    MockedAppConfig.hipEnvironmentHeaders returns Some(allowedHeaders.filterNot(Set("Content-Type")))
-
   }
 
 }
