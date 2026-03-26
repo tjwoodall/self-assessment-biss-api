@@ -258,34 +258,10 @@ paths:
               examples:
                 Response for TY 2024-25 and before:
                   value:
-                    total:
-                      income: 100.35
-                      expenses: 50
-                      additions: 575.7
-                      deductions: 60
-                      accountingAdjustments: -30
-                    profit:
-                      net: 20.2
-                      taxable: 35.55
-                    loss:
-                      net: 0
-                      taxable: 35.1
+                    $ref: ./examples/retrieveBiss/def1/responseTY2425AndBefore.json
                 Response for TY 2025-26 onwards:
                   value:
-                    total:
-                      income: 100.35
-                      expenses: 50.01
-                      additions: 575.71
-                      deductions: 60.01
-                      accountingAdjustments: -30.01
-                    profit:
-                      net: 20.2
-                      taxable: 35.55
-                      adjusted: 30.01
-                    loss:
-                      net: 0.01
-                      taxable: 35.1
-                    outstandingBusinessIncome: 35.01
+                    $ref: ./examples/retrieveBiss/def1/responseTY2526Onwards.json
         '400':
           description: Bad request
           headers:
