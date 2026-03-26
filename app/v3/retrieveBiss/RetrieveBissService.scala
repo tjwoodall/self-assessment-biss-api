@@ -40,14 +40,12 @@ class RetrieveBissService @Inject() (connector: RetrieveBissConnector) extends B
 
         val model = wrapper.responseData
 
-        val isDefaultNonTysResponse =
-          model match {
-            case Def1_RetrieveBissResponse(_, _, _, Some(_)) => true
-            case _                                           => false
-          }
+        val isDefaultNonTys =
+          !request.taxYear.useTaxYearSpecificApi &&
+            request.businessId.businessId == "XAIS12345678910"
 
         val transformed =
-          if (request.taxYear.useTaxYearSpecificApi || isDefaultNonTysResponse) {
+          if (request.taxYear.useTaxYearSpecificApi || isDefaultNonTys) {
             model
           } else {
             model match {
@@ -70,6 +68,7 @@ class RetrieveBissService @Inject() (connector: RetrieveBissConnector) extends B
         ResponseWrapper(wrapper.correlationId, transformed)
 
       }.leftMap(mapDownstreamErrors(errorMapFor(request.taxYear).errorMap)))
+
   }
 
 }

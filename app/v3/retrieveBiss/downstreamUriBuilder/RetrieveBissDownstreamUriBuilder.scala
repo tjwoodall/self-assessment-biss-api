@@ -64,7 +64,7 @@ object RetrieveBissDownstreamUriBuilder {
 
       val uri =
         IfsUri[RetrieveBissResponse](
-          s"itsa/income-tax/v1/${taxYear.asTysDownstream}/income-sources/$nino/$businessId/$incomeSourceType/biss"
+          s"itsa/income-tax/v1/income-sources/${taxYear.asTysDownstream}/$nino/$businessId/$incomeSourceType/biss"
         )
 
       (uri, Nil)
@@ -93,7 +93,7 @@ object RetrieveBissDownstreamUriBuilder {
 
   def downstreamUriFor[Resp](taxYear: TaxYear): RetrieveBissDownstreamUriBuilder[Resp] = {
     val downstreamUriBuilder: RetrieveBissDownstreamUriBuilder[RetrieveBissResponse] = taxYear.year match {
-      case year if year >= 2027               => Api1879
+      case year if year >= 2026               => Api1879
       case _ if taxYear.useTaxYearSpecificApi => Api1871
       case _                                  => Api1415
     }

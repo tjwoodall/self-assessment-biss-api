@@ -162,7 +162,7 @@ class ResolveTaxYearSpec extends UnitSpec with ResolverSupport {
     }
 
     "return the expected error" when {
-      val resolver = ResolveTaxYearMinMax(TaxYear.fromMtd("2021-22") -> TaxYear.fromMtd("2024-25"))
+      val resolver = ResolveTaxYearMinMax(minimumTaxYear -> maximumTaxYear, minError = BadRequestError, maxError = InvalidTaxYearParameterError)
 
       "given a tax year earlier than the minimum" in {
         val result: Validated[Seq[MtdError], TaxYear] = resolver("2020-21")
