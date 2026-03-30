@@ -55,7 +55,7 @@ class RetrieveBissConnectorSpec extends ConnectorSpec {
           ("2021-22", TypeOfBusiness.`foreign-property-fhl-eea`, IncomeSourceType.`fhl-property-eea`),
           ("2022-23", TypeOfBusiness.`foreign-property`, IncomeSourceType.`foreign-property`)
         ).foreach { case (taxYear, typeOfBusiness, incomeSourceType) =>
-          s"type of business is $typeOfBusiness and tax year is $taxYear (Non TYS)" in new Test {
+          s"type of business is $typeOfBusiness and tax year is $taxYear (Non TYS)" in new IfsTest with Test {
             val expectedUrl: URL = url"$baseUrl/income-tax/income-sources/nino/$nino/$incomeSourceType/${taxYearAsDownstream(taxYear)}/biss"
 
             val request: RetrieveBissRequestData =
@@ -63,7 +63,7 @@ class RetrieveBissConnectorSpec extends ConnectorSpec {
 
             val expected: Right[Nothing, ResponseWrapper[RetrieveBissResponse]] = Right(ResponseWrapper(correlationId, response))
 
-            willGet(url = expectedUrl).returns(Future.successful(expected))
+            willGet(url = expectedUrl, parameters = Seq("incomeSourceId" -> businessId)) returns Future.successful(expected)
 
             await(connector.retrieveBiss(request)) shouldBe expected
           }
@@ -91,7 +91,7 @@ class RetrieveBissConnectorSpec extends ConnectorSpec {
               s"$baseUrl/itsa/income-tax/v1/income-sources/${taxYearAsTysDownstream(taxYear)}"
           }
 
-          s"type of business is $typeOfBusiness and tax year is $taxYear (TYS)" in new Test {
+          s"type of business is $typeOfBusiness and tax year is $taxYear (TYS)" in new HipTest with Test {
             val expectedUrl: URL = url"${urlPrefix(taxYear)}/$nino/$businessId/$incomeSourceType/biss"
 
             val request: RetrieveBissRequestData =
@@ -113,7 +113,7 @@ class RetrieveBissConnectorSpec extends ConnectorSpec {
           ("2025-26", TypeOfBusiness.`foreign-property-fhl-eea`, IncomeSourceType.`fhl-property-eea`),
           ("2026-27", TypeOfBusiness.`foreign-property-fhl-eea`, IncomeSourceType.`fhl-property-eea`)
         ).foreach { case (taxYear, typeOfBusiness, incomeSourceType) =>
-          s"type of business is $typeOfBusiness and tax year is $taxYear (TYS)" in new Test {
+          s"type of business is $typeOfBusiness and tax year is $taxYear (TYS)" in new HipTest with Test {
             val request: RetrieveBissRequestData =
               Def1_RetrieveBissRequestData(Nino(nino), typeOfBusiness, taxYearMtd(taxYear), BusinessId(businessId))
 
@@ -126,7 +126,7 @@ class RetrieveBissConnectorSpec extends ConnectorSpec {
     }
   }
 
-  private trait Test extends HipTest {
+  private trait Test {
     self: ConnectorTest =>
     val connector: RetrieveBissConnector = new RetrieveBissConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
