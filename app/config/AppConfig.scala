@@ -50,6 +50,25 @@ trait AppConfig {
     environmentHeaders = ifsEnvironmentHeaders
   )
 
+  // HIP Config
+  def hipBaseUrl: String
+
+  def hipEnv: String
+
+  def hipClientId: String
+
+  def hipClientSecret: String
+
+  def hipEnvironmentHeaders: Option[Seq[String]]
+
+  lazy val hipDownstreamConfig: BasicAuthDownstreamConfig = BasicAuthDownstreamConfig(
+    baseUrl = hipBaseUrl,
+    env = hipEnv,
+    clientId = hipClientId,
+    clientSecret = hipClientSecret,
+    environmentHeaders = hipEnvironmentHeaders
+  )
+
   // API Config
   def apiGatewayContext: String
 
@@ -86,6 +105,13 @@ class AppConfigImpl @Inject() (config: ServicesConfig, val configuration: Config
   val ifsEnv: String                             = config.getString("microservice.services.ifs.env")
   val ifsToken: String                           = config.getString("microservice.services.ifs.token")
   val ifsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.ifs.environmentHeaders")
+
+  // HIP Config
+  val hipBaseUrl: String                         = config.baseUrl("hip")
+  val hipEnv: String                             = config.getString("microservice.services.hip.env")
+  val hipClientId: String                        = config.getString("microservice.services.hip.clientId")
+  val hipClientSecret: String                    = config.getString("microservice.services.hip.clientSecret")
+  val hipEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.hip.environmentHeaders")
 
   // API Config
   val apiGatewayContext: String                    = config.getString("api.gateway.context")

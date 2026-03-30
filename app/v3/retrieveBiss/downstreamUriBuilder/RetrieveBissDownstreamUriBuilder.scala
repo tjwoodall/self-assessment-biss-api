@@ -17,7 +17,7 @@
 package v3.retrieveBiss.downstreamUriBuilder
 
 import api.connectors.DownstreamUri
-import api.connectors.DownstreamUri.IfsUri
+import api.connectors.DownstreamUri.{IfsUri, HipUri}
 import api.models.domain.{BusinessId, Nino, TaxYear}
 import api.models.downstream.IncomeSourceType
 import config.AppConfig
@@ -41,12 +41,11 @@ object RetrieveBissDownstreamUriBuilder {
         taxYear: TaxYear
     )(implicit appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
 
-      val uri =
-        IfsUri[RetrieveBissResponse](
-          s"income-tax/income-sources/nino/$nino/$incomeSourceType/${taxYear.asDownstream}/biss"
-        )
+      val uri: DownstreamUri[RetrieveBissResponse] = IfsUri[RetrieveBissResponse](
+        s"income-tax/income-sources/nino/$nino/$incomeSourceType/${taxYear.asDownstream}/biss"
+      )
 
-      val queryParams = Seq("incomeSourceId" -> businessId.businessId)
+      val queryParams: Seq[(String, String)] = Seq("incomeSourceId" -> businessId.businessId)
 
       (uri, queryParams)
     }
@@ -63,7 +62,7 @@ object RetrieveBissDownstreamUriBuilder {
     )(implicit appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
 
       val uri =
-        IfsUri[RetrieveBissResponse](
+        HipUri[RetrieveBissResponse](
           s"itsa/income-tax/v1/income-sources/${taxYear.asTysDownstream}/$nino/$businessId/$incomeSourceType/biss"
         )
 
@@ -82,7 +81,7 @@ object RetrieveBissDownstreamUriBuilder {
     )(implicit appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
 
       val uri =
-        IfsUri[RetrieveBissResponse](
+        HipUri[RetrieveBissResponse](
           s"itsa/income-tax/v1/${taxYear.asTysDownstream}/income-sources/$nino/$businessId/$incomeSourceType/biss"
         )
 

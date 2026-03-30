@@ -56,7 +56,7 @@ class RetrieveBissConnectorSpec extends ConnectorSpec {
           ("2022-23", TypeOfBusiness.`foreign-property`, IncomeSourceType.`foreign-property`)
         ).foreach { case (taxYear, typeOfBusiness, incomeSourceType) =>
           s"type of business is $typeOfBusiness and tax year is $taxYear (Non TYS)" in new Test {
-            val expectedUrl: URL = url"$baseUrl/itsa/income-tax/v1/income-sources/$nino/$incomeSourceType/${taxYearAsDownstream(taxYear)}/biss"
+            val expectedUrl: URL = url"$baseUrl/income-tax/income-sources/nino/$nino/$incomeSourceType/${taxYearAsDownstream(taxYear)}/biss"
 
             val request: RetrieveBissRequestData =
               Def1_RetrieveBissRequestData(Nino(nino), typeOfBusiness, taxYearMtd(taxYear), BusinessId(businessId))
@@ -126,7 +126,7 @@ class RetrieveBissConnectorSpec extends ConnectorSpec {
     }
   }
 
-  private trait Test extends IfsTest {
+  private trait Test extends HipTest {
     self: ConnectorTest =>
     val connector: RetrieveBissConnector = new RetrieveBissConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
