@@ -28,7 +28,7 @@ import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v3.fixtures.RetrieveBissFixture
 
-class RetrieveBissControllerHipISpec extends IntegrationBaseSpec with RetrieveBissFixture {
+class RetrieveBissControllerISpec extends IntegrationBaseSpec with RetrieveBissFixture {
 
   "Calling the retrieve BISS endpoint" should {
     "return a valid response with status OK" when {

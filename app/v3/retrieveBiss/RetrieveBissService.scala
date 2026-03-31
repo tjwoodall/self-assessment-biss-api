@@ -17,12 +17,11 @@
 package v3.retrieveBiss
 
 import api.controllers.RequestContext
-import api.models.outcomes.ResponseWrapper
 import api.services.{BaseService, ServiceOutcome}
-import cats.implicits.*
+import cats.implicits._
 import v3.retrieveBiss.downstreamErrorMapping.RetrieveBissDownstreamErrorMapping.errorMapFor
 import v3.retrieveBiss.model.request.RetrieveBissRequestData
-import v3.retrieveBiss.model.response.{Def1_RetrieveBissResponse, RetrieveBissResponse}
+import v3.retrieveBiss.model.response.RetrieveBissResponse
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,44 +30,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class RetrieveBissService @Inject() (connector: RetrieveBissConnector) extends BaseService {
 
   def retrieveBiss(
-      request: RetrieveBissRequestData
-  )(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[RetrieveBissResponse]] = {
+      request: RetrieveBissRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[RetrieveBissResponse]] = {
 
     connector
       .retrieveBiss(request)
-      .map(_.map { wrapper =>
-
-        val model = wrapper.responseData
-
-        val isDefaultNonTys =
-          !request.taxYear.useTaxYearSpecificApi &&
-            request.businessId.businessId == "XAIS12345678910"
-
-        val transformed =
-          if (request.taxYear.useTaxYearSpecificApi || isDefaultNonTys) {
-            model
-          } else {
-            model match {
-              case Def1_RetrieveBissResponse(total, profit, loss, _) =>
-                Def1_RetrieveBissResponse(
-                  total.copy(
-                    additions = None,
-                    deductions = None,
-                    accountingAdjustments = None
-                  ),
-                  profit.copy(
-                    adjusted = None
-                  ),
-                  loss,
-                  outstandingBusinessIncome = None
-                )
-            }
-          }
-
-        ResponseWrapper(wrapper.correlationId, transformed)
-
-      }.leftMap(mapDownstreamErrors(errorMapFor(request.taxYear).errorMap)))
-
+      .map(_.leftMap(mapDownstreamErrors(errorMapFor(request.taxYear).errorMap)))
   }
 
 }
