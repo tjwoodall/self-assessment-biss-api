@@ -28,22 +28,10 @@ import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v3.fixtures.RetrieveBissFixture
 
-class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBissFixture {
-
-  override def servicesConfig: Map[String, Any] =
-    Map("feature-switch.ifs_hip_migration_1871.enabled" -> false, "feature-switch.ifs_hip_migration_1879.enabled" -> false) ++ super.servicesConfig
+class RetrieveBissControllerISpec extends IntegrationBaseSpec with RetrieveBissFixture {
 
   "Calling the retrieve BISS endpoint" should {
     "return a valid response with status OK" when {
-      "valid request is made" in new NonTysTest {
-        DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUrl, queryParams, OK, downstreamResponseJsonFull)
-
-        val response: WSResponse = await(request.get())
-
-        response.json shouldBe responseJsonFull
-        response.status shouldBe OK
-        response.header(CONTENT_TYPE) shouldBe Some(MimeTypes.JSON)
-      }
 
       "valid TYS request is made" in new TysTest("2025-26", "25-26", "01") {
         DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUrl, OK, downstreamResponseJsonFull)
@@ -62,19 +50,6 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
       checkWith("foreign-property-fhl-eea", "fhl-property-eea")
 
       def checkWith(requestTypeOfBusiness: String, requestIncomeSourceType: String): Unit = {
-        s"type of business is $requestTypeOfBusiness (Non TYS)" in new NonTysTest {
-          override val typeOfBusiness: String   = requestTypeOfBusiness
-          override val incomeSourceType: String = requestIncomeSourceType
-
-          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUrl, queryParams, OK, downstreamResponseJsonMin)
-
-          val response: WSResponse = await(request.get())
-
-          response.json shouldBe responseJsonMin
-          response.status shouldBe OK
-          response.header(CONTENT_TYPE) shouldBe Some(MimeTypes.JSON)
-        }
-
         Seq(
           ("2023-24", "23-24"),
           ("2024-25", "24-25")
@@ -140,23 +115,20 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
     }
 
     "a downstream service error" when {
-      def errorBody(code: String): String =
-        s"""{
-           |  "code": "$code",
-           |  "reason": "downstream message"
-           |}""".stripMargin
-
-      def serviceErrorTestNonTys(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-        s"downstream returns the $downstreamCode error and status $downstreamStatus (Non TYS)" in new NonTysTest {
-          DownstreamStub.onError(DownstreamStub.GET, downstreamUrl, queryParams, downstreamStatus, errorBody(downstreamCode))
-
-          val response: WSResponse = await(request.get())
-
-          response.json shouldBe Json.toJson(expectedBody)
-          response.status shouldBe expectedStatus
-          response.header(CONTENT_TYPE) shouldBe Some(MimeTypes.JSON)
-        }
-      }
+      def errorBody(`type`: String): String =
+        s"""
+           |{
+           |  "origin": "HoD",
+           |  "response": {
+           |    "failures": [
+           |      {
+           |        "type": "${`type`}",
+           |        "reason": "downstream message"
+           |      }
+           |    ]
+           |  }
+           |}
+        """.stripMargin
 
       def serviceErrorTestTys(downstreamStatus: Int,
                               downstreamCode: String,
@@ -180,22 +152,6 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
         }
       }
 
-      val api1415ErrorMap: Seq[(Int, String, Int, MtdError)] = Seq(
-        (BAD_REQUEST, "INVALID_IDVALUE", BAD_REQUEST, NinoFormatError),
-        (BAD_REQUEST, "INVALID_TAXYEAR", BAD_REQUEST, TaxYearFormatError),
-        (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, InternalError),
-        (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, InternalError),
-        (BAD_REQUEST, "INVALID_INCOMESOURCETYPE", INTERNAL_SERVER_ERROR, InternalError),
-        (BAD_REQUEST, "INVALID_INCOMESOURCEID", BAD_REQUEST, BusinessIdFormatError),
-        (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError),
-        (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
-        (UNPROCESSABLE_ENTITY, "INCOME_SUBMISSIONS_NOT_EXIST", BAD_REQUEST, RuleNoIncomeSubmissionsExist),
-        (UNPROCESSABLE_ENTITY, "INVALID_ACCOUNTING_PERIOD", INTERNAL_SERVER_ERROR, InternalError),
-        (UNPROCESSABLE_ENTITY, "INVALID_QUERY_PARAM", INTERNAL_SERVER_ERROR, InternalError),
-        (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
-        (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
-      )
-
       val api1871ErrorMap: Seq[(Int, String, Int, MtdError)] = Seq(
         (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
         (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
@@ -206,7 +162,6 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
         (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
         (UNPROCESSABLE_ENTITY, "INCOME_SUBMISSIONS_NOT_EXIST", BAD_REQUEST, RuleNoIncomeSubmissionsExist),
         (UNPROCESSABLE_ENTITY, "INVALID_ACCOUNTING_PERIOD", INTERNAL_SERVER_ERROR, InternalError),
-        (UNPROCESSABLE_ENTITY, "INVALID_QUERY_PARAM", INTERNAL_SERVER_ERROR, InternalError),
         (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError),
         (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
         (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
@@ -222,14 +177,11 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
         (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
         (UNPROCESSABLE_ENTITY, "INCOME_SUBMISSIONS_NOT_EXIST", BAD_REQUEST, RuleNoIncomeSubmissionsExist),
         (UNPROCESSABLE_ENTITY, "INVALID_ACCOUNTING_PERIOD", INTERNAL_SERVER_ERROR, InternalError),
-        (UNPROCESSABLE_ENTITY, "INVALID_QUERY_PARAM", INTERNAL_SERVER_ERROR, InternalError),
         (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError),
         (UNPROCESSABLE_ENTITY, "REQUESTED_TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError),
         (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
         (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
       )
-
-      api1415ErrorMap.foreach(args => serviceErrorTestNonTys.tupled(args))
 
       Seq(
         ("2024-25", "24-25", api1871ErrorMap, "self-employment"),
@@ -268,7 +220,7 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
       buildRequest(uri)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.3.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
+          (AUTHORIZATION, "Bearer 123")
         )
     }
 
@@ -282,20 +234,11 @@ class RetrieveBissControllerIfsISpec extends IntegrationBaseSpec with RetrieveBi
     def downstreamTaxYear: String                    = downstreamTysTaxYear
 
     def downstreamUrl: String = if (taxYearMtd(taxYear).year >= 2026) {
-      s"/income-tax/$downstreamTaxYear/income-sources/$nino/$businessId/$incomeSourceType/biss"
+      s"/itsa/income-tax/v1/$downstreamTaxYear/income-sources/$nino/$businessId/$incomeSourceType/biss"
     } else {
-      s"/income-tax/income-sources/$downstreamTaxYear/$nino/$businessId/$incomeSourceType/biss"
+      s"/itsa/income-tax/v1/income-sources/$downstreamTaxYear/$nino/$businessId/$incomeSourceType/biss"
     }
 
-  }
-
-  private trait NonTysTest extends Test {
-    def incomeSourceType: String  = "self-employment"
-    def taxYear: String           = "2022-23"
-    def downstreamTaxYear: String = "2023"
-    def downstreamUrl: String     = s"/income-tax/income-sources/nino/$nino/$incomeSourceType/$downstreamTaxYear/biss"
-
-    def queryParams: Map[String, String] = Map("incomeSourceId" -> businessId)
   }
 
 }

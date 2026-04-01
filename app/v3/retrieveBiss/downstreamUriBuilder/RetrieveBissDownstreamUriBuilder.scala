@@ -17,10 +17,10 @@
 package v3.retrieveBiss.downstreamUriBuilder
 
 import api.connectors.DownstreamUri
-import api.connectors.DownstreamUri.{HipUri, IfsUri}
+import api.connectors.DownstreamUri.{IfsUri, HipUri}
 import api.models.domain.{BusinessId, Nino, TaxYear}
 import api.models.downstream.IncomeSourceType
-import config.{AppConfig, ConfigFeatureSwitches}
+import config.AppConfig
 import v3.retrieveBiss.model.response.RetrieveBissResponse
 
 sealed trait RetrieveBissDownstreamUriBuilder[Resp] {
@@ -34,8 +34,12 @@ object RetrieveBissDownstreamUriBuilder {
 
   case object Api1415 extends RetrieveBissDownstreamUriBuilder[RetrieveBissResponse] {
 
-    override def buildUri(nino: Nino, businessId: BusinessId, incomeSourceType: IncomeSourceType, taxYear: TaxYear)(implicit
-        appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
+    override def buildUri(
+        nino: Nino,
+        businessId: BusinessId,
+        incomeSourceType: IncomeSourceType,
+        taxYear: TaxYear
+    )(implicit appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
 
       val uri: DownstreamUri[RetrieveBissResponse] = IfsUri[RetrieveBissResponse](
         s"income-tax/income-sources/nino/$nino/$incomeSourceType/${taxYear.asDownstream}/biss"
@@ -50,18 +54,17 @@ object RetrieveBissDownstreamUriBuilder {
 
   case object Api1871 extends RetrieveBissDownstreamUriBuilder[RetrieveBissResponse] {
 
-    override def buildUri(nino: Nino, businessId: BusinessId, incomeSourceType: IncomeSourceType, taxYear: TaxYear)(implicit
-        appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
+    override def buildUri(
+        nino: Nino,
+        businessId: BusinessId,
+        incomeSourceType: IncomeSourceType,
+        taxYear: TaxYear
+    )(implicit appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
 
-      val uri: DownstreamUri[RetrieveBissResponse] = if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1871")) {
+      val uri =
         HipUri[RetrieveBissResponse](
           s"itsa/income-tax/v1/income-sources/${taxYear.asTysDownstream}/$nino/$businessId/$incomeSourceType/biss"
         )
-      } else {
-        IfsUri[RetrieveBissResponse](
-          s"income-tax/income-sources/${taxYear.asTysDownstream}/$nino/$businessId/$incomeSourceType/biss"
-        )
-      }
 
       (uri, Nil)
     }
@@ -70,18 +73,17 @@ object RetrieveBissDownstreamUriBuilder {
 
   case object Api1879 extends RetrieveBissDownstreamUriBuilder[RetrieveBissResponse] {
 
-    override def buildUri(nino: Nino, businessId: BusinessId, incomeSourceType: IncomeSourceType, taxYear: TaxYear)(implicit
-        appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
+    override def buildUri(
+        nino: Nino,
+        businessId: BusinessId,
+        incomeSourceType: IncomeSourceType,
+        taxYear: TaxYear
+    )(implicit appConfig: AppConfig): (DownstreamUri[RetrieveBissResponse], Seq[(String, String)]) = {
 
-      val uri: DownstreamUri[RetrieveBissResponse] = if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1879")) {
+      val uri =
         HipUri[RetrieveBissResponse](
           s"itsa/income-tax/v1/${taxYear.asTysDownstream}/income-sources/$nino/$businessId/$incomeSourceType/biss"
         )
-      } else {
-        IfsUri[RetrieveBissResponse](
-          s"income-tax/${taxYear.asTysDownstream}/income-sources/$nino/$businessId/$incomeSourceType/biss"
-        )
-      }
 
       (uri, Nil)
     }

@@ -41,6 +41,9 @@ enum TypeOfBusiness(val preThresholdType: IncomeSourceType, val postThresholdTyp
 }
 
 object TypeOfBusiness {
-  val fhlPropertyMinimumTaxYear: TaxYear              = TaxYear.fromMtd("2025-26")
-  val parser: PartialFunction[String, TypeOfBusiness] = Enums.parser(values)
+  val fhlPropertyMinimumTaxYear: TaxYear = TaxYear.fromMtd("2025-26")
+
+  val parser: PartialFunction[String, TypeOfBusiness] =
+    Enums.parser(values)
+
 }
