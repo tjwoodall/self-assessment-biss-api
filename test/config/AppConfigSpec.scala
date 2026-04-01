@@ -57,6 +57,22 @@ class AppConfigSpec extends UnitSpec {
         expectedIfsEnvHeaders
       )
     }
+
+    "return the HIP config" in {
+      val expectedHipEnvHeaders = Some(
+        List(
+          "HIP-Accept",
+          "HIP-Gov-Test-Scenario"
+        ))
+
+      simpleAppConfig.hipDownstreamConfig shouldBe BasicAuthDownstreamConfig(
+        "http://127.0.0.1:9772",
+        "Prod",
+        "someClientId",
+        "someClientSecret",
+        expectedHipEnvHeaders
+      )
+    }
   }
 
   "endpointsEnabled" when {
