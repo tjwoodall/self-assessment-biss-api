@@ -172,35 +172,50 @@ paths:
                     type: object
                     properties:
                       income:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: 0
                         type: number
                         description: The total income for the income source. The value
                           must be between 0 and 99999999999.99 up to 2 decimal places.
-                        example: 100.00
+                        example: 100.0
                       expenses:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: -99999999999.99
                         type: number
                         description: The total expenses for the income source. The
                           value must be between -99999999999.99 and 99999999999.99
                           up to 2 decimal places.
-                        example: 50.00
+                        example: 50.0
                       additions:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: -99999999999.99
                         type: number
                         description: The total additions to net profit (or deduction
                           to net loss). The value must be between -99999999999.99
                           and 99999999999.99 up to 2 decimal places.
-                        example: 5.00
+                        example: 5.0
                       deductions:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: 0
                         type: number
                         description: The total deductions to net loss (or addition
                           to net profit). The value must be between 0 and 99999999999.99
                           up to 2 decimal places.
-                        example: 60.00
+                        example: 60.0
                       accountingAdjustments:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: -99999999999.99
                         type: number
                         description: "Adjustment for change of accounting practice,\
                           \ for example, cash basis to accrual accounting. The value\
                           \ must be between -99999999999.99 and 99999999999.99 up\
                           \ to 2 decimal places."
-                        example: -30.00
+                        example: -30.0
                     description: Object of total values.
                   profit:
                     required:
@@ -209,17 +224,26 @@ paths:
                     type: object
                     properties:
                       net:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: 0
                         type: number
                         description: The net profit of income source. The value must
                           be between 0 and 99999999999.99 up to 2 decimal places.
-                        example: 20.00
+                        example: 20.0
                       taxable:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: 0
                         type: number
                         description: The taxable net profit of the income source.
                           The value must be between 0 and 99999999999.99 up to 2 decimal
                           places.
-                        example: 0.00
+                        example: 0.0
                       adjusted:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: 0
                         type: number
                         description: "Profit including disallowable expenses and deducting\
                           \ non‑taxable income, before claiming capital allowances\
@@ -227,7 +251,7 @@ paths:
                           \ be between 0 and 99999999999.99 up to 2 decimal places.\
                           \ This field will only be returned for tax year 2025-26\
                           \ and onwards."
-                        example: 30.00
+                        example: 30.0
                     description: Object of profit values.
                   loss:
                     required:
@@ -236,24 +260,33 @@ paths:
                     type: object
                     properties:
                       net:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: 0
                         type: number
                         description: The net loss of income source. The value must
                           be between 0 and 99999999999.99 up to 2 decimal places.
-                        example: 0.00
+                        example: 0.0
                       taxable:
+                        multipleOf: 0.01
+                        maximum: 99999999999.99
+                        minimum: 0
                         type: number
                         description: The taxable net loss of the income source. The
                           value must be between 0 and 99999999999.99 up to 2 decimal
                           places.
-                        example: 35.00
+                        example: 35.0
                     description: Object of loss values.
                   outstandingBusinessIncome:
+                    multipleOf: 0.01
+                    maximum: 99999999999.99
+                    minimum: 0
                     type: number
                     description: Any other business income not included in other fields.
                       The value must be between 0 and 99999999999.99 up to 2 decimal
                       places. This field will only be returned for tax year 2025-26
                       and onwards.
-                    example: 30.00
+                    example: 30.0
                 description: Retrieve a Business Income Source Summary Response
               examples:
                 Response for TY 2024-25 and before:
@@ -422,32 +455,47 @@ components:
           type: object
           properties:
             income:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: 0
               type: number
               description: The total income for the income source. The value must
                 be between 0 and 99999999999.99 up to 2 decimal places.
-              example: 100.00
+              example: 100.0
             expenses:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: -99999999999.99
               type: number
               description: The total expenses for the income source. The value must
                 be between -99999999999.99 and 99999999999.99 up to 2 decimal places.
-              example: 50.00
+              example: 50.0
             additions:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: -99999999999.99
               type: number
               description: The total additions to net profit (or deduction to net
                 loss). The value must be between -99999999999.99 and 99999999999.99
                 up to 2 decimal places.
-              example: 5.00
+              example: 5.0
             deductions:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: 0
               type: number
               description: The total deductions to net loss (or addition to net profit).
                 The value must be between 0 and 99999999999.99 up to 2 decimal places.
-              example: 60.00
+              example: 60.0
             accountingAdjustments:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: -99999999999.99
               type: number
               description: "Adjustment for change of accounting practice, for example,\
                 \ cash basis to accrual accounting. The value must be between -99999999999.99\
                 \ and 99999999999.99 up to 2 decimal places."
-              example: -30.00
+              example: -30.0
           description: Object of total values.
         profit:
           required:
@@ -456,23 +504,32 @@ components:
           type: object
           properties:
             net:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: 0
               type: number
               description: The net profit of income source. The value must be between
                 0 and 99999999999.99 up to 2 decimal places.
-              example: 20.00
+              example: 20.0
             taxable:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: 0
               type: number
               description: The taxable net profit of the income source. The value
                 must be between 0 and 99999999999.99 up to 2 decimal places.
-              example: 0.00
+              example: 0.0
             adjusted:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: 0
               type: number
               description: "Profit including disallowable expenses and deducting non‑\
                 taxable income, before claiming capital allowances or making any further\
                 \ tax adjustments. The value must be between 0 and 99999999999.99\
                 \ up to 2 decimal places. This field will only be returned for tax\
                 \ year 2025-26 and onwards."
-              example: 30.00
+              example: 30.0
           description: Object of profit values.
         loss:
           required:
@@ -481,22 +538,31 @@ components:
           type: object
           properties:
             net:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: 0
               type: number
               description: The net loss of income source. The value must be between
                 0 and 99999999999.99 up to 2 decimal places.
-              example: 0.00
+              example: 0.0
             taxable:
+              multipleOf: 0.01
+              maximum: 99999999999.99
+              minimum: 0
               type: number
               description: The taxable net loss of the income source. The value must
                 be between 0 and 99999999999.99 up to 2 decimal places.
-              example: 35.00
+              example: 35.0
           description: Object of loss values.
         outstandingBusinessIncome:
+          multipleOf: 0.01
+          maximum: 99999999999.99
+          minimum: 0
           type: number
           description: Any other business income not included in other fields. The
             value must be between 0 and 99999999999.99 up to 2 decimal places. This
             field will only be returned for tax year 2025-26 and onwards.
-          example: 30.00
+          example: 30.0
       description: Retrieve a Business Income Source Summary Response
     error-response:
       required:
