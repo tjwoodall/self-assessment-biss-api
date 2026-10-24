@@ -53,19 +53,16 @@ get:
             $ref: './schemas/retrieveBiss/def1/response.json'
           examples:
             Response for TY 2024-25 and before:
-              value:
-                $ref: './examples/retrieveBiss/def1/responseTY2425AndBefore.json'
+              externalValue: './examples/retrieveBiss/def1/responseTY2425AndBefore.json'
             {{#if (enabled 'r23_cl531_docs')}}
             Response for TY 2025-26:
             {{else}}
             Response for TY 2025-26 onwards:
             {{/if}}
-              value:
-                $ref: './examples/retrieveBiss/def1/responseTY2526.json'
+              externalValue: './examples/retrieveBiss/def1/responseTY2526.json'
             {{#if (enabled 'r23_cl531_docs')}}
             Response for TY 2026-27 onwards:
-              value:
-                $ref: './examples/retrieveBiss/def1/responseTY2627Onwards.json'
+              externalValue: './examples/retrieveBiss/def1/responseTY2627Onwards.json'
             {{/if}}
 
     "400":
