@@ -108,12 +108,14 @@
           "maximum": 99999999999.99,
           "multipleOf": 0.01
         }
+        
       },
       "required": [
         "net",
         "taxable"
       ]
     },
+    
     "outstandingBusinessIncome": {
       "description": "Any other business income not included in other fields. The value must be between 0 and 99999999999.99 up to 2 decimal places. This field will only be returned for tax year 2025-26 and onwards.",
       "type": "number",
